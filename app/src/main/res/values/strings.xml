@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Mesure de glycemie</string>
+    <string name="mesure_de_niveau_de_n_glyc_mie">Mesure de niveau de\n Glycémie</string>
+    <string name="tvAgeText">Votre age :</string>
+    <string name="est_ce_que_vous_jeunez">Est-ce que vous jeunez ?</string>
+    <string name="oui">Oui</string>
+    <string name="non">Non</string>
+</resources>

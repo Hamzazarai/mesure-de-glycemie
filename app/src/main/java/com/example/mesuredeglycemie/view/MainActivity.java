@@ -1,4 +1,4 @@
-package com.example.mesuredeglycemie;
+package com.example.mesuredeglycemie.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,12 +12,16 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mesuredeglycemie.R;
+import com.example.mesuredeglycemie.controller.Controller;
+
 public class MainActivity extends AppCompatActivity {
     private TextView tvAge,tvReponse;
     private EditText etValeur;
     private SeekBar sbAge;
     private RadioButton rbIsFasting,rbIsNotFasting;
     private Button btnConsulter;
+    private Controller controller;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
         btnConsulter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                int age;
+                float valeur;
                 Log.i("Information", "button cliqué");
                 boolean verifAge = false, verifValeur = false;
                 if(sbAge.getProgress()!=0)
@@ -59,65 +64,22 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Veuillez saisir votre valeur mesurée !", Toast.LENGTH_LONG).show();
                 if(verifAge && verifValeur)
                 {
-                    calculer();
+                  age=sbAge.getProgress();
+                  valeur =Float.valueOf(etValeur.getText().toString());
+                  // user action view --> controller :
+                    controller.createPatient(age,valeur,rbIsFasting.isChecked());
+
+                    // notify controller --> view :
+                    tvReponse.setText(controller.getResult());
+
                 }
             }
         });
     }
-    private void calculer()
-    {
-    Log.i("Information :","onclick sur le bouton consulter ");
-    int age;float valeur;boolean verifAge =false,verifValeur=false;
-    if(sbAge.getProgress()>0)
-        verifAge=true;
-    else
-        Toast.makeText(MainActivity.this,"Veuillez saisir votre age .",Toast.LENGTH_SHORT).show();
-    if(etValeur.getText().toString().isEmpty())
-        Toast.makeText(MainActivity.this,"Veuillez saisir votre valeur mesurée.",Toast.LENGTH_LONG).show();
-    else
-        verifValeur=true;
-    if(verifValeur&&verifValeur)
-    {
-        age=sbAge.getProgress();
-        valeur=Float.parseFloat(etValeur.getText().toString());
-        if(rbIsFasting.isChecked())
-        {
-            if(age>=13)
-            {
-                if(valeur<5.0)
-                    tvReponse.setText("Le niveau de glycémie est trop bas.");
-                else if (valeur<=7.2) //(valeurMesuree >= 5.0 && valeurMesuree <= 7.2)
-                    tvReponse.setText("Le niveau de glycémie est normal.");
-                else //valeurMesuree > 7.2
-                    tvReponse.setText("Le niveau de glycémie est trop élevé.");
-
-            }
-            else if(age>=6)  //(age >= 6 && age <= 12)
-            {
-                if(valeur<5.0)
-                    tvReponse.setText("Le niveau de glycémie est trop bas.");
-                else if (valeur<=10.0)  //(valeurMesuree >= 5.0 && valeurMesuree <= 10.0)
-                    tvReponse.setText("Le niveau de glycémie est normal.");
-                else  //valeurMesuree > 10.0
-                    tvReponse.setText("Le niveau de glycémie est trop élevé.");
-
-
-            }
-            else // age < 6
-            {
-                if (valeur > 10.5)
-                    tvReponse.setText("Niveau de glycémie est trop élevé");
-                else
-                    tvReponse.setText("Niveau de glycémie est normale");
-            }
-
-        }
-
-    }
-    }
 
     private void init()
     {
+        controller=Controller.getInstance();
         tvAge=findViewById(R.id.tvAge);
         tvReponse=findViewById(R.id.tvReponse);
         etValeur=findViewById(R.id.etVal);

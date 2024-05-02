@@ -1,7 +1,9 @@
 package com.example.mesuredeglycemie.view;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,12 +18,14 @@ import com.example.mesuredeglycemie.R;
 import com.example.mesuredeglycemie.controller.Controller;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView tvAge,tvReponse;
+    private TextView tvAge;
     private EditText etValeur;
     private SeekBar sbAge;
     private RadioButton rbIsFasting,rbIsNotFasting;
     private Button btnConsulter;
     private Controller controller;
+    private final String RESPONSE_KEY="result";
+    private final int REQUEST_CODE=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +74,11 @@ public class MainActivity extends AppCompatActivity {
                     controller.createPatient(age,valeur,rbIsFasting.isChecked());
 
                     // notify controller --> view :
-                    tvReponse.setText(controller.getResult());
+                    Intent intent =new Intent(getApplicationContext(),ConsultActivity.class);
+                    intent.putExtra(RESPONSE_KEY,controller.getResult());
+                    startActivityForResult(intent,REQUEST_CODE);
+                    //tvReponse.setText(controller.getResult());
+
 
                 }
             }
@@ -81,11 +89,19 @@ public class MainActivity extends AppCompatActivity {
     {
         controller=Controller.getInstance();
         tvAge=findViewById(R.id.tvAge);
-        tvReponse=findViewById(R.id.tvReponse);
+        //tvReponse=findViewById(R.id.tvReponse);
         etValeur=findViewById(R.id.etVal);
         sbAge=findViewById(R.id.sbAge);
         rbIsFasting=findViewById(R.id.rbtOui);
         rbIsNotFasting=findViewById(R.id.rbtNon);
         btnConsulter=findViewById(R.id.btnConsulter);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_CODE)
+            if(resultCode==REQUEST_CODE)
+                Toast.makeText(MainActivity.this,"ERROR:RESULT_CANCELLED",1);
     }
 }
